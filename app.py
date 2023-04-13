@@ -13,12 +13,15 @@ def mine():
     data = request.get_json()
     transactions = data.get("transactions", [])
 
-    sdk.mine(transactions)
+    def mine_in_thread():
+        sdk.mine(transactions)
+        print("New block mined")
+
+    mining_thread = threading.Thread(target=mine_in_thread)
+    mining_thread.start()
 
     response = {
-        "message": "New block mined",
-        "index": blockchain.chain[-1].index,
-        "hash": blockchain.chain[-1].hash
+        "message": "Mining started in a new thread"
     }
 
     return jsonify(response), 200
